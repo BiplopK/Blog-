@@ -1,0 +1,149 @@
+{% extends "main/navbar.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center">{{ blogpost.blog_title }}</h1>
+    <div class="d-flex justify-content-center align-items-center text-muted mb-3">
+        <p class="mb-0">
+            By <strong>{{ blogpost.author.username }}</strong> | {{ blogpost.created_at|date:"M d, Y" }} |   
+        </p>
+    
+        {% if user.is_authenticated and user != blogpost.author %}
+        <form method="post" action="{% url 'follow' blogpost.author.id %}" class="mb-0">
+            {% csrf_token %}
+            {% if blogpost.author.profile in user.profile.following.all %}
+                <button type="submit" class="btn btn-sm bg-transparent border-0 text-danger">
+                    <i class="fa fa-user-minus me-1"></i> Unfollow
+                </button>
+            {% else %}
+                <button type="submit" class="btn btn-sm bg-transparent border-0 text-primary">
+                    <i class="fa fa-user-plus me-1"></i> Follow
+                </button>
+            {% endif %}
+        </form>
+        {% endif %}
+    </div>
+    
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <strong>Content</strong>
+            <p style="text-align: justify;">{{ blogpost.content|safe }}</p>
+
+            <form action="{% url 'like-post' blogpost.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm {% if user in blogpost.likes.all %} btn-success {% else %} btn-outline-success{% endif %}">
+                    <i class="fa-regular fa-thumbs-up"></i> ({{ blogpost.total_likes }})
+                </button>
+            </form>
+           
+            
+            <form action="{% url 'dislike-post' blogpost.id %}" method="post" class="d-inline ms-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm {% if user in blogpost.dislikes.all %} btn-danger{% else %}btn-outline-danger{% endif %}">
+                    <i class="fa-solid fa-thumbs-down"></i>({{ blogpost.dislikes.count }})
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <hr>
+    <h5>Comments</h5>
+
+    {% if comments %}
+        {% for comment in comments %}
+            <div class="border rounded p-3 mb-3">
+                <p class="mb-1">
+                    <strong>
+                        {% if comment.user %}
+                            {{ comment.user.username }}
+                        {% else %}
+                            {{ comment.guest_name }}
+                        {% endif %}
+                    </strong> 
+                    {{ comment.created_at }}
+                </p>
+                <p class="mb-2">{{ comment.content }}</p>
+                <form action="{% url 'comment-like-post' comment.id %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm p-0 border-0">
+                        <i class="fa{% if user in comment.comment_likes.all %}s{% else %}r{% endif %} fa-thumbs-up text-success"></i>
+                        ({{ comment.comment_likes.count }})
+                    </button>
+                </form>
+                
+                <form action="{% url 'comment-dislike-post' comment.id %}" method="post" class="d-inline ms-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm p-0 border-0">
+                        <i class="fa{% if user in comment.comment_dislikes.all %}s{% else %}r{% endif %} fa-thumbs-down text-danger"></i>
+                        ({{ comment.comment_dislikes.count }})
+                    </button>
+                </form>
+                
+                {% if user.is_authenticated %}
+                <form method="POST" class="mb-2 ps-3 border-start">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        <textarea name="content" class="form-control form-control-sm" rows="2"
+                                  placeholder="Reply to this comment..." required></textarea>
+                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Reply</button>
+                </form>
+                {% endif %}
+
+                {% for reply in comment.replies.all %}
+                    <div class="ms-4 mt-3 border rounded p-2 bg-light">
+                        <p class="mb-1">
+                            <strong>
+                                {% if reply.user %}
+                                    {{ reply.user.username }}
+                                {% else %}
+                                    {{ reply.guest_name }}
+                                {% endif %}
+                            </strong> 
+                            {{ reply.created_at }}
+                        </p>
+                        <p class="mb-0">{{ reply.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No comments yet. Be the first to leave a comment.</p>
+    {% endif %}
+
+    {% if comments|length > 5 %}
+    <div class="text-center mt-3">
+        <button id="showMoreBtn" class="btn btn-sm btn-outline-primary">More Comments</button>
+    </div>
+    {% endif %}
+
+    <hr>
+    <div class="card mt-4 p-4">
+        <h5 class="mb-3">Leave a Comment</h5>
+
+        {% if user.is_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <textarea name="content" class="form-control" rows="3" placeholder="Write your comment..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+        </form>
+        {% else %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <input type="text" name="guest_name" class="form-control mb-2" placeholder="Your name" required>
+                <textarea name="content" class="form-control" rows="3" placeholder="Write your comment..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <p><a href="{% url 'blog-list' %}" class="btn btn-sm btn-outline-primary mt-3">Go Back to Blog List</a></p>
+</div>
+{% endblock content %}

@@ -1,0 +1,80 @@
+{% extends 'main/navbar.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Posts Based on Your Interests</h1>
+
+    {% if interested_post %}
+        <div class="row row-cols-md-2 g-4">
+            {% for post in interested_post %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'blog' post.id %}" class="text-decoration-none text-dark">
+                                    {{ post.blog_title }}
+                                </a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                By {{ post.author.username }} | {{ post.created_at|date:"M d, Y" }}
+                            </h6>
+                            <p class="card-text mt-3">
+                                {{ post.content|striptags|truncatewords:50 }}
+                            </p>
+                            <a href="{% url 'blog' post.id %}" class="btn btn-primary mt-3">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-4" role="alert">
+            No posts available for your interests at the moment.
+        </div>
+    {% endif %}
+
+    {% if interested_post.paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+        <ul class="pagination pagination-sm">
+            {% if interested_post.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ interested_post.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for page_num in interested_post.paginator.page_range %}
+                {% if page_num == interested_post.number %}
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                    </li>
+                {% elif page_num > interested_post.number|add:-3 and page_num < interested_post.number|add:3 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                    </li>
+                {% elif page_num == 1 or page_num == interested_post.paginator.num_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                    </li>
+                {% elif page_num == interested_post.number|add:-3 or page_num == interested_post.number|add:3 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if interested_post.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ interested_post.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ interested_post.paginator.num_pages }}">Last</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

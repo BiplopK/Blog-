@@ -1,0 +1,18 @@
+{% extends "main/navbar.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Your Interests</h2>
+
+    {% if interests %}
+        <ul class="list-group">
+            {% for interest in interests %}
+                <li class="list-group-item">{{ interest.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info text-center mt-4">
+            You haven't selected any interests yet.
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

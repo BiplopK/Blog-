@@ -1,0 +1,17 @@
+
+{% extends "main/navbar.html" %}
+{% block content %}
+<h1>All Blog </h1>
+
+<ul>
+    {% for post in blogposts %}
+    <li>
+        <p><a href="{% url 'blog' post.id %}">{{post.blog_title}}</a></p>
+        <p>Community: {{post.community.name}}</p>
+        <p>Created at: {{post.Created_at}}</p>
+    </li>
+    {% empty %}
+    <li>No Post Available</li>
+    {% endfor %}
+</ul>
+{% endblock content %}

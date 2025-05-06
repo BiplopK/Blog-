@@ -1,0 +1,55 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+
+</head>
+<body>
+    <div class="container d-flex justify-content-center allign-items-center" style="min-height: 100vh;">
+        <div class="w-100" style="max-width: 600px;">
+            <h1 class="text-center mb-4">User Registration</h1>
+            <form action="" method="POST" class="card p-5 shadow-sm">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{form.username.label_tag}}
+                    {{form.username}}
+                    <div class="text-danger small">{{form.username.errors}}</div>
+                </div>
+                <div class="mb-3">
+                    {{form.first_name.label_tag}}
+                    {{form.first_name}}
+                    <div class="text-danger small">{{form.first_name.errors}}</div>
+                </div>
+                <div class="mb-3">
+                    {{form.last_name.label_tag}}
+                    {{form.last_name}}
+                    <div class="text-danger small">{{form.last_name.errors}}</div>
+                </div>
+                <div class="mb-3">
+                    {{form.email.label_tag}}
+                    {{form.email}}
+                    <div class="text-danger small">{{form.email.errors}}</div>
+                </div>
+                <div class="mb-3">
+                    {{form.password.label_tag}}
+                    {{form.password}}
+                    <div class="text-danger small">{{form.password.errors}}</div>
+                </div>
+                <div class="mb-3">
+                    {{form.confirm_password.label_tag}}
+                    {{form.confirm_password}}
+                    <div class="text-danger small">{{form.confirm_password.errors}}</div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+            <div class="text-center mt-3 small">
+                <p>Already Have an  accounts? <a href="{% url 'login' %}">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+   
+</body>
+</html>

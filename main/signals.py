@@ -12,4 +12,4 @@ def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'profile'):  
         instance.profile.save()
     else:
-        Profile.objects.get_or_create(user=instance)  
+        Profile.objects.get_or_create(user=instance)

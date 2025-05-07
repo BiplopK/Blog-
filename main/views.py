@@ -243,3 +243,40 @@ class UserBlogListView(View):
         blogposts=paginator.get_page(page_num)
         total_pages=blogposts.paginator.num_pages
         return render(request,'main/user_post_list.html',{'blogposts':blogposts,'total_page':total_pages})
+
+class UserFollowListView(View):
+    def get(self,request,*args,**kwargs):
+        profile=request.user.profile
+        following_user_id=profile.following.values_list('user',flat=True)
+        blogpost=BlogPost.objects.filter(author__in=following_user_id).order_by('-created_at')
+        pagination=Paginator(blogpost,6)
+        page_num=request.GET.get('page')
+        blogposts=pagination.get_page(page_num)
+        return render(request,'main/follow_bloglist.html',{'blogposts':blogposts})
+
+class UserProfileView(View):
+    def get(self,request,*args,**kwargs):
+        profile=get_object_or_404(Profile,user=request.user)
+        
+        return render(request,'main/profile.html',{'profile':profile})
+
+class UpdateProfileView(View):
+    def get(self,request,*args,**kwargs):
+        user=request.user
+        profile=user.profile
+        user_form=UpdateuserForm(instance=user)
+        profile_form=UpdateProfileForm(instance=profile)
+        return render(request,'main/update_profile.html',{'user_form':user_form,'profile_form':profile_form})
+    
+    def post(self,request,*args,**kwargs):
+        user=request.user
+        profile=user.profile
+        user_form=UpdateuserForm(request.POST,request.FILES,instance=user)
+        profile_form=UpdateProfileForm(request.POST,request.FILES,instance=profile)
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('profile')
+            
+        return render(request,"main/update_profile.html",{'user_form':user_form,'profile_form':profile_form})

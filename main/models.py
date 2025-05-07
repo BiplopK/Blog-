@@ -23,6 +23,7 @@ class UserCategory(models.Model):
 
 class Profile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
+    profile_pics=models.ImageField(upload_to='profile_pics',null=True,blank=True)
     last_seen=models.DateTimeField(default=now)
     following=models.ManyToManyField('self',related_name='followers',blank=True)
     interests=models.ManyToManyField(Category,related_name='intersted_categories',blank=True)

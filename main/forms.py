@@ -28,3 +28,23 @@ class CommentForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows':3, 'placeholder':"Add a comments...."})
         }
     
+class UpdateProfileForm(forms.ModelForm):
+    class Meta:
+        model=Profile
+        fields=['profile_pics']
+        widgets = {
+            'profile_pics': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            })
+        }
+
+class UpdateuserForm(forms.ModelForm):
+    class Meta:
+        model=User
+        fields=['username','email']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+    

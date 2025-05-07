@@ -1,0 +1,45 @@
+{% extends "main/navbar.html" %}
+
+{% block content %}
+{% load static %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow rounded-4">
+                <div class="card-body text-center">
+                    {% if profile.profile_pics %}
+                    <img src="{{ profile.profile_pics.url }}" alt="profile_pic" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
+                    {% else %}
+                    <img src="{% static 'images/default_img.jpg' %}" alt="default pic" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
+                    {% endif %}
+                    <h2 class="card-title mb-3">
+                        {{ profile.user.username|title }}'s Profile</h2>
+                    
+
+                    <hr>
+
+                    <p>Email: {{ profile.user.email}}</p>
+                    <p>Following: {{ profile.following.count }}</p>
+
+                    <h5>Interests</h5>
+                    {% if profile.interests.exists %}
+                        <ul class="list-group list-group-flush mb-3">
+                            {% for interest in profile.interests.all %}
+                                <li class="list-group-item">{{ interest.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No interests selected.</p>
+                    {% endif %}
+                    
+                    <p><a href="{% url 'profile-update' %}">Update profile</a></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
